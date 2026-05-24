@@ -1,0 +1,4 @@
+conf.gem github: "skinnyjames/mruby-dbus", branch: "basu"
+conf.gem github: "skinnyjames/mruby-v4l2", branch: "main"
+conf.gem "../../../../mruby-v4l2"
+conf.linker.flags += ['-lbasu']
