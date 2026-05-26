@@ -247,10 +247,29 @@ spec("hokusai-pocket") do |config|
       end
     end
 
+    def patch
+      command("git apply ../../../../support/raylib/sdl.patch", chdir: "vendor/raylib/src/platforms")
+    end
+
+    def patch_remote
+      ruby do
+        File.open("vendor/raylib/src/platforms/sdl.patch", "w") do |io|
+          io << Hokusai::Patches.sdl_patch
+        end
+      end
+
+      command("git apply sdl.patch", chdir: "vendor/raylib/src/platforms")
+    end
+
     def build
       fetch
 
-      incs = (args[:platform] == "sdl") ? "-DCMAKE_C_FLAGS='#{includes}' -DSDL3_DIR=../../sdl3" : ""
+      incs = ""
+      if args[:platform] == "sdl"
+        # just use the patch we have.
+        patch
+        incs = "-DCMAKE_C_FLAGS='#{includes}' -DSDL3_DIR=../../sdl3"
+      end
 
       make("clean", chdir: "vendor/raylib/src")
       command("mkdir -p build", chdir: "vendor/raylib/src")

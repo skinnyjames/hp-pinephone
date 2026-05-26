@@ -36,8 +36,12 @@ class ACamera < Hokusai::Block
     @texture = nil
     @camera = nil
     @timer = Timer.new
-  
+    @filter = false
     super
+  end
+  
+  def shit(event)
+    @filter = !@filter
   end
 
   def render(canvas)
@@ -57,13 +61,23 @@ class ACamera < Hokusai::Block
       if frame
         self.texture.update(frame) if frame.bytesize == lw * lh * 4
       end
+      
       @timer.reset
     # end
     @timer.next
 
     draw_with do |c|
-      c.texture(@texture, canvas.x, canvas.y) do |command|
-        command.flip = false
+      if @filter
+        c.blend_mode_begin("multiply")
+        c.rect(canvas.x, canvas.y, canvas.width, canvas.height) do |com|
+          com.color = Hokusai::Color.new(222,22,22)
+        end
+      end
+        c.texture(@texture, canvas.x, canvas.y) do |command|
+          command.flip = false
+        end
+      if @filter
+        c.blend_mode_end
       end
     end
 
@@ -131,7 +145,7 @@ end
 Hokusai::Backend.run(App) do |config|
   config.title = "SDBus Test"
   config.height = 800
-  config.width = 800
+  config.width = 500
   config.fps = 60
   config.after_load do
     Hokusai.fonts.register "default", Hokusai::Backend::Font.default
