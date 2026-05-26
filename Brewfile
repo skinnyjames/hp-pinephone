@@ -183,7 +183,7 @@ spec("hokusai-pocket") do |config|
       fetch
 
       command("mkdir -p build", chdir: "vendor/sdl3")
-      cmake("-S . -B build -DBUILD_SHARED_LIBS=OFF -DSDL_X11_XSCRNSAVER=OFF", chdir: "vendor/sdl3")
+      cmake("-S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DSDL_X11_XSCRNSAVER=OFF", chdir: "vendor/sdl3")
       make("-j 5 all", chdir: "vendor/sdl3/build")
     end
   end
@@ -247,10 +247,36 @@ spec("hokusai-pocket") do |config|
       end
     end
 
+    def patch
+      command("git apply ../../../../support/raylib/sdl.patch", chdir: "vendor/raylib/src/platforms")
+
+      ruby do
+        config = File.read("support/raylib/rgestures.h")
+        File.open("vendor/raylib/src/rgestures.h", "w") do |io|
+          io << config
+        end
+      end
+    end
+
+    def patch_remote
+      ruby do
+        File.open("vendor/raylib/src/platforms/sdl.patch", "w") do |io|
+          io << Hokusai::Patches.sdl_patch
+        end
+      end
+
+      command("git apply sdl.patch", chdir: "vendor/raylib/src/platforms")
+    end
+
     def build
       fetch
 
-      incs = (args[:platform] == "sdl") ? "-DCMAKE_C_FLAGS='#{includes}' -DSDL3_DIR=../../sdl3" : ""
+      incs = ""
+      if args[:platform] == "sdl"
+        # just use the patch we have.
+        patch
+        incs = "-DCMAKE_C_FLAGS='#{includes}' -DSDL3_DIR=../../sdl3"
+      end
 
       make("clean", chdir: "vendor/raylib/src")
       command("mkdir -p build", chdir: "vendor/raylib/src")
@@ -261,7 +287,7 @@ spec("hokusai-pocket") do |config|
         make("-j 5", chdir: "vendor/raylib/build")
       else
         command("mkdir -p build/raylib", chdir: "vendor/raylib")
-        command("make -j 5 PLATFORM=#{platform} GRAPHICS=#{opengl} C_INCLUDE_PATH=#{cincs}", chdir: "vendor/raylib/src")
+        command("make -j 5 PLATFORM=#{platform} GRAPHICS=#{opengl} SDL_INCLUDE_PATH=../../sdl3/include SDL_LIBRARY_PATH=../../sdl3/build/libSDL3.a C_INCLUDE_PATH=#{cincs}", chdir: "vendor/raylib/src")
         command("mv vendor/raylib/src/libraylib.a vendor/raylib/build/raylib/.")
       end
     end
@@ -675,18 +701,18 @@ spec("hokusai-pocket") do |config|
         end
       end
 
-      gcc(" -O3 -Wall #{includes(args)} -c ../../#{prefix}/src/mruby-uv/loop.c", chdir: "vendor/hokusai-pocket")
+      gcc("-O2 -Wall #{includes(args)} -c ../../#{prefix}/src/mruby-uv/loop.c", chdir: "vendor/hokusai-pocket")
       
       defs = ""
 
       if args[:http]
-        gcc("-O3 -Wall  -DNOGDI -DWIN32_LEAN_AND_MEAN -DNOUSER #{includes(args)} -c ../../#{prefix}/src/http/http.c", chdir: "vendor/hokusai-pocket")
+        gcc("-O2 -Wall  -DNOGDI -DWIN32_LEAN_AND_MEAN -DNOUSER #{includes(args)} -c ../../#{prefix}/src/http/http.c", chdir: "vendor/hokusai-pocket")
 
         defs = "-DHP_HTTP"
       end
       
       ruby do
-        gcc("-O3 -Wall #{defs} #{includes(args)} -I. -c #{sources}", chdir: "vendor/hokusai-pocket")
+        gcc("-O2 -Wall #{defs} #{includes(args)} -I. -c #{sources}", chdir: "vendor/hokusai-pocket")
           .forward_output(&on_output)
           .execute
         ar("r libhokusai.a #{objs}", chdir: "vendor/hokusai-pocket")

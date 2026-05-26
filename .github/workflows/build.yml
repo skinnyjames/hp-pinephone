@@ -1,5 +1,7 @@
 name: test
-on: push
+on:
+  push:
+  workflow_dispatch:
 jobs:
   test-linux-arm64:
     runs-on: ubuntu-22.04-arm
@@ -24,6 +26,7 @@ jobs:
       - name: build pocket
         run: chmod 755 barista && ./barista cli,raylib,nfd,hokusai:http=true:remote=true:arm64=true:platform=sdl:opengl=es mruby:gem_config=./gems
         env:
+          MRUBY_BUILD_TYPE: "release"
           LDFLAGS: "-lbasu"
           LIBS: "-lbasu"
       - uses: actions/upload-artifact@v4
