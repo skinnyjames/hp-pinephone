@@ -61,7 +61,11 @@ module BuildHelpers
       # add -mwindows after figuring out why apps don't launch... 
       "-lgdi32 -lwinmm -lws2_32 -lcomctl32 -lcomdlg32 -lole32 -luuid -ldbghelp -luserenv -liphlpapi -lbcrypt -lcrypt32 -static -lwinpthread"
     elsif detected_os == "Linux"
-      "-lGL -lm -lpthread -ldl -lrt -lX11"
+      if args[:opengl] == "es"
+        "-lGLESv2 -lEGL -lgbm -lGL -lm -lpthread -ldl -lrt -lX11"
+      else
+        "-lGL -lm -lpthread -ldl -lrt -lX11"
+      end
     else
       ""
     end
@@ -183,7 +187,7 @@ spec("hokusai-pocket") do |config|
       fetch
 
       command("mkdir -p build", chdir: "vendor/sdl3")
-      cmake("-S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DSDL_X11_XSCRNSAVER=OFF", chdir: "vendor/sdl3")
+      cmake("-S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DSDL_KMSDRM_SHARED=ON -DSDL_X11_XSCRNSAVER=OFF", chdir: "vendor/sdl3")
       make("-j 5 all", chdir: "vendor/sdl3/build")
     end
   end
