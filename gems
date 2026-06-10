@@ -1,3 +1,5 @@
+conf.enable_cxx_exception
 conf.gem github: "skinnyjames/mruby-dbus", branch: "basu"
 conf.gem github: "skinnyjames/mruby-v4l2", branch: "main"
+conf.gem github: "Asmod4n/mruby-lmdb", branch: "master"
 conf.linker.flags_after_libraries += ['-lbasu']
