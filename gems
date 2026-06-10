@@ -1,4 +1,3 @@
 conf.gem github: "skinnyjames/mruby-dbus", branch: "basu"
 conf.gem github: "skinnyjames/mruby-v4l2", branch: "main"
-conf.gem github: "jbreeden/mruby-sqlite", branch: "master"
 conf.linker.flags_after_libraries += ['-lbasu']
