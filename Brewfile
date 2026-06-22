@@ -666,7 +666,7 @@ spec("hokusai-pocket") do |config|
     def build
       prefix = args[:remote] ? "vendor/hp" : path
       if args[:remote] && !Dir.exists?("vendor/hp")
-        command("git clone --branch feature/networking --depth 1 https://github.com/skinnyjames/hokusai-pocket.git vendor/hp")
+        command("git clone --branch main --depth 1 https://github.com/skinnyjames/hokusai-pocket.git vendor/hp")
       end
 
       ruby do
