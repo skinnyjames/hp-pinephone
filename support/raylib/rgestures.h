@@ -180,9 +180,9 @@ float GetGesturePinchAngle(void);                       // Get gesture pinch ang
 //----------------------------------------------------------------------------------
 #define FORCE_TO_SWIPE      0.2f        // Swipe force, measured in normalized screen units/time
 #define MINIMUM_DRAG        0.005f      // Drag minimum force, measured in normalized screen units (0.0f to 1.0f)
-#define DRAG_TIMEOUT        0.10f        // Drag minimum time for web, measured in seconds
+#define DRAG_TIMEOUT        0.20f        // Drag minimum time for web, measured in seconds
 #define MINIMUM_PINCH       0.005f      // Pinch minimum force, measured in normalized screen units (0.0f to 1.0f)
-#define TAP_TIMEOUT         0.10f        // Tap minimum time, measured in seconds
+#define TAP_TIMEOUT         0.20f        // Tap minimum time, measured in seconds
 #define PINCH_TIMEOUT       0.3f        // Pinch minimum time, measured in seconds
 #define DOUBLETAP_RANGE     0.03f       // DoubleTap range, measured in normalized screen units (0.0f to 1.0f)
 
