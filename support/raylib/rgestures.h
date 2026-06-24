@@ -269,6 +269,7 @@ void ProcessGestureEvent(GestureEvent event)
 
     if (GESTURES.Touch.pointCount == 1)     // One touch point
     {
+        printf("TOUCHED: %f %f\n", event.position[0].x, event.position[0].y);
         if (event.touchAction == TOUCH_ACTION_DOWN)
         {
             GESTURES.Touch.tapCounter++;    // Tap counter
